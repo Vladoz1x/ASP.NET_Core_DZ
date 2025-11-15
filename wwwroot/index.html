@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <title>WeatherApp</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff3b3b;
+            margin-bottom: 30px;
+        }
+
+        .form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #ff3b3b;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            button:hover {
+                background: #e22b2b;
+            }
+
+        .card {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+            .card img {
+                vertical-align: middle;
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .hourly-card {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+            .hourly-card img {
+                display: block;
+                margin: 0 auto 10px;
+            }
+    </style>
+</head>
+<body>
+    <h1>🌤 WeatherApp</h1>
+    <div class="form">
+        <input id="city" placeholder="Введіть місто..." />
+        <button onclick="load()">Пошук</button>
+    </div>
+
+    <div id="current"></div>
+    <div class="grid" id="hourly"></div>
+
+    <script>
+        async function load() {
+            const city = document.getElementById('city').value.trim();
+            if (!city) return;
+
+            document.getElementById('current').innerHTML = "";
+            document.getElementById('hourly').innerHTML = "";
+
+            const curRes = await fetch(`/api/weather/current?city=${city}`);
+            if (!curRes.ok) {
+                document.getElementById('current').innerHTML = "<div class='card'>Місто не знайдено ❌</div>";
+                return;
+            }
+
+            const cur = await curRes.json();
+            document.getElementById('current').innerHTML = `
+        <div class="card">
+            <h2>${cur.city}</h2>
+            <p>${cur.description}</p>
+            <p>🌡 Температура: ${cur.temp}°C</p>
+            <p>⬇ Мін: ${cur.tempMin}°C | ⬆ Макс: ${cur.tempMax}°C</p>
+            <p>💨 Вітер: ${cur.wind} км/год</p>
+            <img src="https://openweathermap.org/img/wn/${cur.icon}@2x.png" />
+        </div>
+    `;
+
+            const hrRes = await fetch(`/api/weather/hourly?city=${city}`);
+            if (!hrRes.ok) return;
+
+            const list = await hrRes.json();
+            document.getElementById('hourly').innerHTML = list.map(x => `
+        <div class="hourly-card">
+            <div><b>${new Date(x.time * 1000).toLocaleTimeString()}</b></div>
+            <img src="https://openweathermap.org/img/wn/${x.icon}@2x.png" />
+            <div>${x.description}</div>
+            <div>🌡 ${x.temp}°C</div>
+            <div>💨 ${x.wind} км/год</div>
+        </div>
+    `).join('');
+        }
+
+    </script>
+</body>
+</html>

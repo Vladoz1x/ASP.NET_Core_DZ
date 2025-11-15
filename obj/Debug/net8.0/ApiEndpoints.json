@@ -1,0 +1,34 @@
+[
+  {
+    "ContainingType": "WeatherApp.Controllers.WeatherController",
+    "Method": "Current",
+    "RelativePath": "api/weather/current",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "city",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WeatherApp.Controllers.WeatherController",
+    "Method": "Hourly",
+    "RelativePath": "api/weather/hourly",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "city",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
